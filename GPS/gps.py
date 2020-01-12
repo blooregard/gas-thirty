@@ -8,5 +8,6 @@ gps_socket.watch()
 for new_data in gps_socket:
     if new_data:
         data_stream.unpack(new_data)
-        print(f"Lat: {data_stream.lat}, Long: {data_stream.lon}, Alt: {data_stream.alt}")
+        print("Lat: %s, Long: %s, Alt: %s" % (data_stream.lat, data_stream.lon, data_stream.alt))
         sleep(5)
+

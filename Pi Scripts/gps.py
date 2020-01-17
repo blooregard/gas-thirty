@@ -12,6 +12,7 @@ lats = []
 long = []
 alt = []
 dates = []
+counter = 0
 
 for new _data in gps_socket:
     if new_data:
@@ -21,7 +22,8 @@ for new _data in gps_socket:
         lats.append(data_stream.lat)
         long.append(data_stream.lon)
         alt.append(data_stream.alt)
-        dates = dates.append(now)
+        dates.append(now)
+        counter += 1
         sleep(1)
         if len(dates) == 100:
             gps_dict = {'latitude': lats, 'longitude': long, 'altitude': alt, 'datetime': dates}
@@ -29,7 +31,12 @@ for new _data in gps_socket:
             XX.set_db('https://gas-thirty.documents.azure.com:443/',
                       'Q0ePFNbM7l6ncK9B6J1w6BrPkTahU9TuD0ZgWUAO6mpjTS65WQBuOZkES17MolYNCXtOxpfHAEvDqAwgBN6NJg==',
                       'gas-thirty')
-            XX.set_container('gasdump', '/datetime')
-            XX.upsert_data(gps_dict)
-            gps_dict = {}
+            XX.set_container('gpsdump', '/datetime')
+            XX.upsert_data(gps_dict,counter)
+            gps_dict.clear()
+            lats = []
+            long = []
+            alt = []
+            dates = []
+            counter = 0
             print('GPS Loaded to Azure')

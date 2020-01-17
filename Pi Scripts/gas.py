@@ -6,6 +6,7 @@ from AzureConnect import AC
 gas_lpg = []
 ch4 = []
 dates = []
+counter = 0
 
 try:
     print("Press CTRL+C to abort")
@@ -17,6 +18,7 @@ try:
         gas_lpg.append(perc["GAS_LPG"])
         ch4.append(perc["CH4"])
         dates.append(now)
+        counter += 1
         sys.stdout.write("\r")
         sys.stdout.write("\033[K")
         sys.stdout.write("LPG: %g ppm, CH4: %g ppm" % (perc["GAS_LPG"],perc["CH4"]))
@@ -29,8 +31,12 @@ try:
                       'Q0ePFNbM7l6ncK9B6J1w6BrPkTahU9TuD0ZgWUAO6mpjTS65WQBuOZkES17MolYNCXtOxpfHAEvDqAwgBN6NJg==',
                       'gas-thirty')
             XX.set_container('gasdump', '/datetime')
-            XX.upsert_data(gas_dict)
-            gas_dict = {}
+            XX.upsert_data(gas_dict,counter)
+            gas_dict.clear()
+            gas_lpg = []
+            ch4 = []
+            dates = []
+            counter = 0
             print('Gas data loaded to Azure')
 
 except Exception as e:

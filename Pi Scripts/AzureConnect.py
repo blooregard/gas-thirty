@@ -21,6 +21,7 @@ class AC(object):
         self.container= None
         self.primary_key = None
         self.data_dict = None
+        self.counter = None
 
     def set_db(self,url,key,database_name):
         self.url = url
@@ -28,7 +29,7 @@ class AC(object):
         self.database_name = database_name
         self.client = cosmos_client.CosmosClient(self.url, {'masterKey': self.key})
         self.client.create_database_if_not_exists(self.database_name)
-        print('Database connection successfully established')
+        print('\nDatabase connection successfully established')
         return(self.client)
 
     def set_container(self,container_id,primary_key):
@@ -36,10 +37,16 @@ class AC(object):
         self.primary_key = primary_key
         self.container = self.client.get_database_client(self.database_name)
         self.container.create_container_if_not_exists(self.container_id,{'paths': [self.primary_key], 'kind': documents.PartitionKind.Hash})
-        print('Container connection successfully established')
+        print('\nContainer connection successfully established')
         return (self.container)
 
-    def upsert_data(self,data_dict):
+    def upsert_data(self,data_dict,counter):
+        self.counter = counter
+        self.data_dict = data_dict
         item = self.container.get_container_client(self.container_id)
-        item.upsert_item(body= self.data_dict)
-        print('Data successfully uploaded to '+str(self.container_id))
+        for i in range(0,self.counter):
+            new_dict = {}
+            for key, value in self.data_dict.items():
+                new_dict[key]=value[i]
+            item.upsert(body=new_dict)
+        print('\nData successfully uploaded to '+str(self.container_id))
